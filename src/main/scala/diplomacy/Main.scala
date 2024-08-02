@@ -25,10 +25,15 @@ object Main {
             val currentConfig = Class.forName(currentName).newInstance.asInstanceOf[Config]
             currentConfig ++ config
         })) match {
-          case m: RawModule => m
-          case lm: LazyModule => LazyModule(lm).module
+          case m: RawModule => {
+            println(s"RawModule")
+            m
+          }
+          case lm: LazyModule => {
+            println(s"LazyModule $LazyModule(lm).module")
+            LazyModule(lm).module
+          }
         }
-
     val annos = Seq(
       new Elaborate,
       new Convert
@@ -51,6 +56,22 @@ object Main {
     freechips.rocketchip.util.ElaborationArtefacts.files.foreach{ case (ext, contents) => os.write.over(os.Path(dir) / s"${config.mkString("_")}.${ext}", contents()) }
   }
 
-  def main(args: Array[String]): Unit = ParserForMethods(this).runOrExit(args)
+  def main(args: Array[String]): Unit = {
+
+      try {
+        // your scala code here
+        ParserForMethods(this).runOrExit(args)
+      }
+      catch {
+        case e: Exception => { println(s"Exception => $e.toString") }
+        case _: Throwable => {
+          println("Got some other kind of Throwable exception")
+        }
+      } finally {
+        // your scala code here, such as closing a database connection
+        // o
+      }
+
+    }
 }
 

@@ -86,6 +86,7 @@ class TLBResp(implicit p: Parameters) extends CoreBundle()(p) {
   val must_alloc = Bool()
   /** if this address is prefetchable for caches*/
   val prefetchable = Bool()
+  val ee = Bool()
 }
 
 class TLBEntryData(implicit p: Parameters) extends CoreBundle()(p) {
@@ -319,6 +320,7 @@ class TLB(instruction: Boolean, lgMaxSize: Int, cfg: TLBConfig)(implicit edge: T
     val kill = Input(Bool())
   })
   io.ptw.customCSRs := DontCare
+  io.resp.ee := DontCare
 
   val pageGranularityPMPs = pmpGranularity >= (1 << pgIdxBits)
   val vpn = io.req.bits.vaddr(vaddrBits-1, pgIdxBits)

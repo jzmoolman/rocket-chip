@@ -10,11 +10,13 @@ import freechips.rocketchip.util._
 
 class PMPConfig extends Bundle {
   val l = Bool()
-  val res = UInt(2.W)
+  val res = UInt(1.W)
+  val ee = Bool()  // Encryption Enabled
   val a = UInt(2.W)
   val x = Bool()
   val w = Bool()
   val r = Bool()
+
 }
 
 object PMP {
@@ -36,6 +38,7 @@ class PMPReg(implicit p: Parameters) extends CoreBundle()(p) {
   def reset(): Unit = {
     cfg.a := 0.U
     cfg.l := 0.U
+    cfg.ee := false.B
   }
 
   def readAddr = if (pmpGranularity.log2 == PMP.lgAlign) addr else {
@@ -150,6 +153,7 @@ class PMPChecker(lgMaxSize: Int)(implicit val p: Parameters) extends Module
     val r = Output(Bool())
     val w = Output(Bool())
     val x = Output(Bool())
+    val ee = Output(Bool())
   })
 
   val default = if (io.pmp.isEmpty) true.B else io.prv > PRV.S.U
@@ -157,6 +161,7 @@ class PMPChecker(lgMaxSize: Int)(implicit val p: Parameters) extends Module
   pmp0.cfg.r := default
   pmp0.cfg.w := default
   pmp0.cfg.x := default
+  pmp0.cfg.ee := false.B
 
   val res = (io.pmp zip (pmp0 +: io.pmp)).reverse.foldLeft(pmp0) { case (prev, (pmp, prevPMP)) =>
     val hit = pmp.hit(io.addr, io.size, lgMaxSize, prevPMP)
@@ -181,10 +186,12 @@ class PMPChecker(lgMaxSize: Int)(implicit val p: Parameters) extends Module
     cur.cfg.r := aligned && (pmp.cfg.r || ignore)
     cur.cfg.w := aligned && (pmp.cfg.w || ignore)
     cur.cfg.x := aligned && (pmp.cfg.x || ignore)
+    cur.cfg.ee := aligned && (pmp.cfg.ee || ignore)
     Mux(hit, cur, prev)
   }
 
   io.r := res.cfg.r
   io.w := res.cfg.w
   io.x := res.cfg.x
+  io.ee := res.cfg.ee
 }
