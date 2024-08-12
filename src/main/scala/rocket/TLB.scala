@@ -70,6 +70,7 @@ class TLBResp(implicit p: Parameters) extends CoreBundle()(p) {
   val miss = Bool()
   /** physical address */
   val paddr = UInt(paddrBits.W)
+  val ee = Bool()
   val gpa = UInt(vaddrBitsExtended.W)
   val gpa_is_pte = Bool()
   /** page fault exception */
@@ -86,7 +87,6 @@ class TLBResp(implicit p: Parameters) extends CoreBundle()(p) {
   val must_alloc = Bool()
   /** if this address is prefetchable for caches*/
   val prefetchable = Bool()
-  val ee = Bool()
 }
 
 class TLBEntryData(implicit p: Parameters) extends CoreBundle()(p) {
