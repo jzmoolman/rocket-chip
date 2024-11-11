@@ -26,6 +26,7 @@ object TLMessages
   def Hint           = 5.U     //     .    .                   => HintAck
   def AcquireBlock   = 6.U     //     .                        => Grant[Data]
   def AcquirePerm    = 7.U     //     .                        => Grant[Data]
+  def ee_request     = 8.U     //     .                        => EE commands
   def Probe          = 6.U     //          .                   => ProbeAck[Data]
   def AccessAck      = 0.U     //               .    .
   def AccessAckData  = 1.U     //               .    .

@@ -46,8 +46,10 @@ case class CoherenceManagerWrapperParams(
   def instantiate(context: HasTileLinkLocations, loc: Location[TLBusWrapper])(implicit p: Parameters): CoherenceManagerWrapper = {
     val cmWrapper = LazyModule(new CoherenceManagerWrapper(this, context))
     cmWrapper.suggestName(loc.name + "_wrapper")
+    println(s"ZZZ instantiate ${cmWrapper.suggestedName}")
     cmWrapper.halt.foreach { context.anyLocationMap += loc.halt(_) }
     context.tlBusWrapperLocationMap += (loc -> cmWrapper)
+    println(s"ZZZ  instantiate $cmWrapper.suggestedName done")
     cmWrapper
   }
 }
@@ -61,8 +63,13 @@ class CoherenceManagerWrapper(params: CoherenceManagerWrapperParams, context: Ha
   val builtInDevices = BuiltInDevices.none
   val prefixNode = None
 
-  private def banked(node: TLOutwardNode): TLOutwardNode =
+  private def banked(node: TLOutwardNode): TLOutwardNode = {
+    println(s"ZZZ->  params.nBanks ${params.nBanks}")
+    println(s"TLOutwardNode ${node.outward.name}")
+
     if (params.nBanks == 0) node else { TLTempNode() :=* BankBinder(params.nBanks, params.blockBytes) :*= node }
+  }
+
   val outwardNode = banked(tempOut)
 }
 

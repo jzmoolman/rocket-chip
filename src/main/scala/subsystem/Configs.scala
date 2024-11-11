@@ -9,6 +9,7 @@ import freechips.rocketchip.devices.debug._
 import freechips.rocketchip.devices.tilelink._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.rocket._
+import freechips.rocketchip.subsystem
 import freechips.rocketchip.tile._
 import freechips.rocketchip.util._
 
@@ -31,6 +32,9 @@ class BaseSubsystemConfig extends Config ((site, here, up) => {
     blockBytes = site(CacheBlockBytes),
     dtsFrequency = Some(100000000)) // Default to 100 MHz pbus clock
   case MemoryBusKey => MemoryBusParams(
+    beatBytes = site(XLen)/8,
+    blockBytes = site(CacheBlockBytes))
+  case MemoryControllerKey => MemoryControllerParams(
     beatBytes = site(XLen)/8,
     blockBytes = site(CacheBlockBytes))
   case FrontBusKey => FrontBusParams(
@@ -82,6 +86,7 @@ class WithCoherentBusTopology extends Config((site, here, up) => {
     CoherentBusTopologyParams(
       sbus = site(SystemBusKey),
       mbus = site(MemoryBusKey),
+      mcontroller = site(MemoryControllerKey),
       l2 = site(BankedL2Key),
       sbusToMbusXType = site(SbusToMbusXTypeKey),
       driveMBusClockFromSBus = site(DriveClocksFromSBus)))
@@ -466,8 +471,9 @@ class WithRationalRocketTiles extends Config((site, here, up) => {
 
 class WithEdgeDataBits(dataBits: Int) extends Config((site, here, up) => {
   case MemoryBusKey => up(MemoryBusKey, site).copy(beatBytes = dataBits/8)
+  case MemoryControllerKey => up(MemoryControllerKey, site).copy(beatBytes = dataBits/8 )
   case ExtIn => up(ExtIn, site).map(_.copy(beatBytes = dataBits/8))
-  
+
 })
 
 class WithJtagDTM extends Config ((site, here, up) => {

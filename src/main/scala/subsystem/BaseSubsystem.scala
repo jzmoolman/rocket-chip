@@ -59,9 +59,13 @@ trait HasConfigurableTLNetworkTopology { this: HasTileLinkLocations =>
   val location: HierarchicalLocation
 
   // Calling these functions populates tlBusWrapperLocationMap and connects the locations to each other.
+  println("ZZZ -> HasConfigurableTLNetworkTopology")
   val topology = p(TLNetworkTopologyLocated(location))
   topology.map(_.instantiate(this))
   topology.foreach(_.connect(this))
+
+  topology.map(x => println(x))
+  println("ZZZ -> HasConfigurableTLNetworkTopology done")
 
   // This is used lazily at DTS binding time to get a view of the network
   lazy val topManagers = tlBusWrapperLocationMap(p(TLManagerViewpointLocated(location))).unifyManagers
