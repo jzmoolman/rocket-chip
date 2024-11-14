@@ -15,7 +15,6 @@ case object FrontBusKey extends Field[FrontBusParams]
 case object PeripheryBusKey extends Field[PeripheryBusParams]
 case object ControlBusKey extends Field[PeripheryBusParams]
 case object MemoryBusKey extends Field[MemoryBusParams]
-case object MemoryControllerKey extends Field[MemoryControllerParams]
 
 // These objects serve as labels for specified attachment locations
 //   from amongst the five traditional tilelink bus wrappers.
@@ -30,7 +29,6 @@ case object FBUS extends TLBusWrapperLocation("subsystem_fbus")
 case object MBUS extends TLBusWrapperLocation("subsystem_mbus")
 case object CBUS extends TLBusWrapperLocation("subsystem_cbus")
 case object L2   extends TLBusWrapperLocation("subsystem_l2")
-case object MController extends TLBusWrapperLocation("subsystem_mcontroller")
 
 /** Parameterizes the subsystem in terms of optional clock-crossings
   *   that are insertable between some of the five traditional tilelink bus wrappers.
@@ -93,29 +91,18 @@ case class HierarchicalBusTopologyParams(
 case class CoherentBusTopologyParams(
   sbus: SystemBusParams, // TODO remove this after better width propagation
   mbus: MemoryBusParams,
-  mcontroller: MemoryControllerParams,
   l2: BankedL2Params,
   sbusToMbusXType: ClockCrossingType = NoCrossing,
   driveMBusClockFromSBus: Boolean = true
 ) extends TLBusWrapperTopology(
   instantiations = (if (l2.nBanks == 0) Nil else List(
     (MBUS, mbus),
-    // (L2, CoherenceManagerWrapperParams(mbus.blockBytes, mbus.beatBytes, l2.nBanks, L2.name, sbus.dtsFrequency)(l2.coherenceManager)),
-    (MController, mcontroller),
-    (L2, CoherenceManagerWrapperParams(mcontroller.blockBytes, mcontroller.beatBytes, l2.nBanks, L2.name, sbus.dtsFrequency)(l2.coherenceManager)))),
+     (L2, CoherenceManagerWrapperParams(mbus.blockBytes, mbus.beatBytes, l2.nBanks, L2.name, sbus.dtsFrequency)(l2.coherenceManager)))),
   connections = if (l2.nBanks == 0) Nil else List(
     (SBUS, L2,   TLBusWrapperConnection(driveClockFromMaster = Some(true), nodeBinding = BIND_STAR)()),
-//    (L2,  MBus,  TLBusWrapperConnection.crossTo(
-//      xType = sbusToMbusXType,
-//      driveClockFromMaster = if (driveMBusClockFromSBus) Some(true) else None,
-//      nodeBinding = BIND_QUERY)),
-    (L2,  MController,  TLBusWrapperConnection.crossTo(
+    (L2,  MBUS,  TLBusWrapperConnection.crossTo(
       xType = sbusToMbusXType,
       driveClockFromMaster = if (driveMBusClockFromSBus) Some(true) else None,
-      //                         ^^^^^^^
-      //                               \
-      //                               |  havent changed this
       nodeBinding = BIND_QUERY)),
-    (MController, MBUS, TLBusWrapperConnection(driveClockFromMaster = Some(true), nodeBinding = BIND_STAR)())
   )
 )
