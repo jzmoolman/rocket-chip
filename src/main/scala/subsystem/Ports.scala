@@ -3,12 +3,12 @@
 package freechips.rocketchip.subsystem
 
 import chisel3._
-
-import org.chipsalliance.cde.config.Field
+import freechips.rocketchip.amba.axi4._
 import freechips.rocketchip.diplomacy._
 import freechips.rocketchip.tilelink._
-import freechips.rocketchip.amba.axi4._
 import freechips.rocketchip.util._
+import org.chipsalliance.cde.config.Field
+
 
 /** Specifies the size and width of external memory ports */
 case class MasterPortParams(
@@ -56,7 +56,7 @@ trait CanHaveMasterAXI4MemPort { this: BaseSubsystem =>
   }).toList.flatten)
 
   for (i <- 0 until memAXI4Node.portParams.size) {
-    val mem_bypass_xbar = mbus { TLXbar() }
+    val mem_bypass_xbar = mbus( TLXbar() )
 
     // Create an incoherent alias for the AXI4 memory
     memPortParamsOpt.foreach(memPortParams => {
@@ -71,7 +71,7 @@ trait CanHaveMasterAXI4MemPort { this: BaseSubsystem =>
           InModuleBody { prefixSource.bundle := 0.U(1.W) }
           replicator
         }
-        sbus.coupleTo(s"memory_controller_bypass_port_named_$portName") {
+        sbus.coupleTo(s"zmemory_controller_bypass_port_named_$portName") {
           (mbus.crossIn(mem_bypass_xbar)(ValName("bus_xing"))(p(SbusToMbusXTypeKey))
             := TLWidthWidget(sbus.beatBytes)
             := replicator.node
@@ -83,13 +83,14 @@ trait CanHaveMasterAXI4MemPort { this: BaseSubsystem =>
       })
     })
 
-    mbus.coupleTo(s"memory_controller_port_named_$portName") {
+    mbus.coupleTo(s"zmemory_controller_port_named_$portName") {
       (memAXI4Node
         := AXI4UserYanker()
         := AXI4IdIndexer(idBits)
         := TLToAXI4()
         := TLWidthWidget(mbus.beatBytes)
         := mem_bypass_xbar
+        := TLMemoryEncryptionController()
         := _
       )
     }

@@ -388,7 +388,9 @@ trait NodeHandle[DI, UI, EI, BI <: Data, DO, UO, EO, BO <: Data]
     * @param h A source node also with sink handle.
     * @return A [[NodeHandle]] with that node as `inwardNode`, this node as `outwardNode`.
     */
-  override def :=  [DX, UX, EX, BX <: Data, EY](h: NodeHandle[DX, UX, EX, BX, DI, UI, EY, BI])(implicit p: Parameters, sourceInfo: SourceInfo): NodeHandle[DX, UX, EX, BX, DO, UO, EO, BO] = { bind(h, BIND_ONCE);  NodeHandle(h, this) }
+  override def :=  [DX, UX, EX, BX <: Data, EY](h: NodeHandle[DX, UX, EX, BX, DI, UI, EY, BI])(implicit p: Parameters, sourceInfo: SourceInfo): NodeHandle[DX, UX, EX, BX, DO, UO, EO, BO] = {
+    bind(h, BIND_ONCE);  NodeHandle(h, this)
+  }
 
   /** Connects two full nodes handles => full node handle.
     *
