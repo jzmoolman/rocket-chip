@@ -25,8 +25,7 @@ class TLMemoryEncryptionController()(implicit p: Parameters)
       println(s"out $out")
       println(s"in $in")
       out <> in
-      if (!edgeOut.manager.anySupportAcquireB) {
-        in.b.valid := false.B
+      when (in.a.bits.ee_a === true.B) {
         out.a.valid := false.B
       }
     }

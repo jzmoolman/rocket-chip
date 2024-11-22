@@ -307,6 +307,7 @@ class L1MetaReadReq(implicit p: Parameters) extends L1HellaCacheBundle()(p) {
   val idx    = UInt(idxBits.W)
   val way_en = UInt(nWays.W)
   val tag    = UInt(tagBits.W)
+  val ee = Bool()
 }
 
 class L1MetaWriteReq(implicit p: Parameters) extends L1MetaReadReq()(p) {

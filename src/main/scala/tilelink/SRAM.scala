@@ -1,5 +1,4 @@
 // See LICENSE.SiFive for license details.
-
 package freechips.rocketchip.tilelink
 
 import chisel3._

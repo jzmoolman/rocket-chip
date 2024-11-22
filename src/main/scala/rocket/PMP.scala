@@ -161,7 +161,7 @@ class PMPChecker(lgMaxSize: Int)(implicit val p: Parameters) extends Module
   pmp0.cfg.r := default
   pmp0.cfg.w := default
   pmp0.cfg.x := default
-  pmp0.cfg.ee := false.B
+  pmp0.cfg.ee := default
 
   val res = (io.pmp zip (pmp0 +: io.pmp)).reverse.foldLeft(pmp0) { case (prev, (pmp, prevPMP)) =>
     val hit = pmp.hit(io.addr, io.size, lgMaxSize, prevPMP)
@@ -172,7 +172,9 @@ class PMPChecker(lgMaxSize: Int)(implicit val p: Parameters) extends Module
       property.cover(pmp.cfg.a === idx.U, s"The cfg access is set to ${name} access ", "Cover PMP access mode setting")
 
     property.cover(pmp.cfg.l === 0x1.U, s"The cfg lock is set to high ", "Cover PMP lock mode setting")
-   
+
+    property.cover(pmp.cfg.ee === 0x1.U, s"The cfg ee is set to high ", "Cover PMP ee mode setting")
+
     // Not including Write and no Read permission as the combination is reserved
     for ((name, idx) <- Seq("no", "RO", "", "RW", "X", "RX", "", "RWX").zipWithIndex; if name.nonEmpty)
       property.cover((Cat(pmp.cfg.x, pmp.cfg.w, pmp.cfg.r) === idx.U), s"The permission is set to ${name} access ", "Cover PMP access permission setting")

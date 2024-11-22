@@ -354,7 +354,7 @@ class TLEdgeOut(
     a.mask    := mask(toAddress, lgSize)
     a.data    := 0.U
     a.corrupt := false.B
-    a.ee := false.B
+    a.ee_a := false.B
     (legal, a)
   }
 
@@ -370,7 +370,7 @@ class TLEdgeOut(
     a.mask    := mask(toAddress, lgSize)
     a.data    := 0.U
     a.corrupt := false.B
-    a.ee := false.B
+    a.ee_a := false.B
     (legal, a)
   }
 
@@ -463,7 +463,7 @@ class TLEdgeOut(
     a.mask    := mask(toAddress, lgSize)
     a.data    := 0.U
     a.corrupt := false.B
-    a.ee := false.B
+    a.ee_a := false.B
     (legal, a)
   }
 
@@ -483,7 +483,7 @@ class TLEdgeOut(
     a.mask    := mask(toAddress, lgSize)
     a.data    := data
     a.corrupt := corrupt
-    a.ee := false.B
+    a.ee_a := false.B
     (legal, a)
   }
 
@@ -503,7 +503,7 @@ class TLEdgeOut(
     a.mask    := mask
     a.data    := data
     a.corrupt := corrupt
-    a.ee := false.B
+    a.ee_a := false.B
     (legal, a)
   }
 
@@ -520,7 +520,7 @@ class TLEdgeOut(
     a.mask    := mask(toAddress, lgSize)
     a.data    := data
     a.corrupt := corrupt
-    a.ee := false.B
+    a.ee_a := false.B
     (legal, a)
   }
 
@@ -537,7 +537,7 @@ class TLEdgeOut(
     a.mask    := mask(toAddress, lgSize)
     a.data    := data
     a.corrupt := corrupt
-    a.ee := false.B
+    a.ee_a := false.B
     (legal, a)
   }
 
@@ -554,7 +554,7 @@ class TLEdgeOut(
     a.mask    := mask(toAddress, lgSize)
     a.data    := 0.U
     a.corrupt := false.B
-    a.ee := false.B
+    a.ee_a := false.B
     (legal, a)
   }
 
