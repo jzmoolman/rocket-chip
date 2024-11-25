@@ -4,6 +4,7 @@
 package freechips.rocketchip.subsystem
 
 import chisel3.util._
+import devices.tilelink.{PUFLocated, PUFParams}
 import org.chipsalliance.cde.config._
 import freechips.rocketchip.devices.debug._
 import freechips.rocketchip.devices.tilelink._
@@ -38,6 +39,7 @@ class BaseSubsystemConfig extends Config ((site, here, up) => {
     blockBytes = site(CacheBlockBytes))
   // Additional device Parameters
   case BootROMLocated(InSubsystem) => Some(BootROMParams(contentFileName = "./bootrom/bootrom.img"))
+  case PUFLocated(InSubsystem) => Some(PUFParams())
   case SubsystemExternalResetVectorKey => false
   case DebugModuleKey => Some(DefaultDebugModuleParams(site(XLen)))
   case CLINTKey => Some(CLINTParams())
