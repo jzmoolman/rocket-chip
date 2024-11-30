@@ -776,7 +776,6 @@ object TLSlavePortParameters {
   }
 
 }
-
 object TLManagerPortParameters {
   @deprecated("Use TLSlavePortParameters.v1 instead of TLManagerPortParameters","")
   def apply(
