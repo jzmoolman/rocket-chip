@@ -18,6 +18,7 @@ class ShiftQueue[T <: Data](gen: T,
     val mask = Output(UInt(entries.W))
   })
 
+
   private val valid = RegInit(VecInit(Seq.fill(entries) { false.B }))
   private val elts = Reg(Vec(entries, gen))
 

@@ -69,10 +69,37 @@ class TLXbar(policy: TLArbiter.Policy = TLArbiter.roundRobin)(implicit p: Parame
 
   lazy val module = new Impl
   class Impl extends LazyModuleImp(this) {
+    println(s"inspect TLXBAR --------------------------------------")
+    println(s"node.in.size ${node.in.size} node.out.size ${node.out.size}")
+    for ( i <- node.in.indices) {
+      println(s"  node.in.($i).Wires ${node.in(i)._1}") //wires
+      val edge = node.in(i)._2
+      println(s"  edge.in.master.masters.size ${edge.master.masters.size}")
+      for (j <- edge.master.masters.indices) {
+        println(s"    edge.in.master.masters($j)._  ${edge.master.masters(j)}")
+      }
+      println(s"  edge.in.client.clients.size ${edge.client.clients.size}")
+      for (j <- edge.client.clients.indices) {
+        println(s"    edge.in.clients.client($j)._  ${edge.client.clients(j)}")
+      }
+    }
+    for ( i <- node.out.indices) {
+      println(s"  node.out.($i).Wires ${node.out(i)._1}") //wires
+      val edge = node.out(i)._2
+      println(s"  edge.out.master.masters.size ${edge.master.masters.size}")
+      for (j <- edge.master.masters.indices) {
+        println(s"    edge.out.master.masters($j)._  ${edge.master.masters(j)}")
+      }
+      println(s"  edge.out.client.clients.size ${edge.client.clients.size}")
+      for (j <- edge.client.clients.indices) {
+        println(s"    edge.out.clients.client($j)._  ${edge.client.clients(j)}")
+
+      }
+    }
     if ((node.in.size * node.out.size) > (8*32)) {
-      println (s"!!! WARNING !!!")
-      println (s" Your TLXbar ($name with parent $parent) is very large, with ${node.in.size} Masters and ${node.out.size} Slaves.")
-      println (s"!!! WARNING !!!")
+       println (s"!!! WARNING !!!")
+       println (s" Your TLXbar ($name with parent $parent) is very large, with ${node.in.size} Masters and ${node.out.size} Slaves.")
+       println (s"!!! WARNING !!!")
     }
 
     TLXbar.circuit(policy, node.in, node.out)
@@ -119,6 +146,14 @@ object TLXbar
         c.visibility.exists { ca => m.address.exists { ma =>
           ca.overlaps(ma)}}}}
       }.toVector}.toVector
+    println( s"XBar.circuit-----------------------------------")
+    println( s"reachableIO")
+    println( s"$reachableIO")
+    val tmp = edgesIn zip reachableIO
+    println( s"edgesIn zip reachableIO")
+    println( s"$tmp")
+
+
     val probeIO = (edgesIn zip reachableIO).map { case (cp, reachableO) =>
       (edgesOut zip reachableO).map { case (mp, reachable) =>
         reachable && cp.client.anySupportProbe && mp.manager.managers.exists(_.regionType >= RegionType.TRACKED)
@@ -274,8 +309,8 @@ object TLXbar
       val route_addrs = port_addrs.map(seq => AddressSet.unify(seq.map(_.widen(~routingMask)).distinct))
 
       // Print the address mapping
-      if (false) {
-        println("Xbar mapping:")
+      if (true) {
+        println("Xbar mapping: zzzzzz - added true")
         route_addrs.foreach { p =>
           print(" ")
           p.foreach { a => print(s" ${a}") }
@@ -288,8 +323,8 @@ object TLXbar
     }.toMap
 
     // Print the ID mapping
-    if (false) {
-      println(s"XBar mapping:")
+    if (true) {
+      println(s"XBar mapping: zzzzz = added true")
       (edgesIn zip inputIdRanges).zipWithIndex.foreach { case ((edge, id), i) =>
         println(s"\t$i assigned ${id} for ${edge.client.clients.map(_.name).mkString(", ")}")
       }

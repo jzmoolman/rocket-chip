@@ -172,6 +172,7 @@ trait HasTileParameters extends HasNonDiplomaticTileParameters {
   lazy val paddrBits: Int = {
     val bits = tlBundleParams.addressBits
     require(bits <= maxPAddrBits, s"Requested $bits paddr bits, but since xLen is $xLen only $maxPAddrBits will fit")
+    println( s"zzzzz -bits for phycical addr (calcualted by diplomacy) = $bits")
     bits
   }
   def vaddrBits: Int =

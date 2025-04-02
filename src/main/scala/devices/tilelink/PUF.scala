@@ -36,28 +36,33 @@ class TLPUF(val base: BigInt, val size: Int, beatBytes: Int = 4,
 
   lazy val module = new Impl
   class Impl extends LazyModuleImp(this) {
-    val contents : Seq[Byte] = Seq(0,1,2,3,4,6,7,0,1,2,3,4,6,7 )
-    val wrapSize = 1 << log2Ceil(contents.size)
 
     val (in, edge) = node.in(0)
 
-    val words = (contents ++ Seq.fill(wrapSize-contents.size)(0.toByte)).grouped(beatBytes).toSeq
-    val bigs = words.map(_.foldRight(BigInt(0)){ case (x,y) => (x.toInt & 0xff) | y << 8})
-    val rom = VecInit(bigs.map(_.U((8*beatBytes).W)))
+//    val w_data = Wire(UInt((8*beatBytes).W))
+    val r_data = RegInit(0.U((8*beatBytes).W))
+    val r_state = RegInit(0.U(1.W))
+    val r_valid = RegInit(false.B)
+    val r_source = RegInit(in.a.bits.source)
 
-    in.d.valid := in.a.valid
     in.a.ready := in.d.ready
 
+//    dontTouch(w_data)
 
-    val index = in.a.bits.address(log2Ceil(wrapSize)-1,log2Ceil(beatBytes))
-    val high = if (wrapSize == size) 0.U else in.a.bits.address(log2Ceil(size)-1, log2Ceil(wrapSize))
-//    in.d.bits := edge.AccessAck(in.a.bits, Mux(high.orR, 0.U, rom(index)))
+    when (r_state === 0.U && in.a.fire === true.B) {
+      r_state := true.B
+      r_data := 0xff.U
+      r_valid := true.B
+      r_source := in.a.bits.source
+    } .otherwise {
+        r_state := false.B
+        r_data := 0.U
+        r_valid := false.B
+      }
 
-//    in.d.bits := edge.AccessAck(in.a.bits,rom(index))
-    val w = Wire(UInt((8*beatBytes).W))
-    dontTouch(w)
-    w := 255.U
-    in.d.bits := edge.AccessAck(in.a.bits,w)
+    in.d.valid := r_valid
+    in.d.bits := edge.AccessAck(in.a.bits, r_data)
+    in.d.bits.source := r_source
 
     // Tie off unused channel
     in.b.valid := false.B
