@@ -90,6 +90,7 @@ trait CanHaveMasterAXI4MemPort { this: BaseSubsystem =>
         := TLToAXI4()
         := TLWidthWidget(mbus.beatBytes)
         := mem_bypass_xbar
+        := MemoryControllerWrapper(cbus)
         := _
       )
     }
