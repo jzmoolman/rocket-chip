@@ -436,6 +436,13 @@ class WithBootROMFile(bootROMFile: String) extends Config((site, here, up) => {
   case BootROMLocated(x) => up(BootROMLocated(x), site).map(_.copy(contentFileName = bootROMFile))
 })
 
+class WithSMC() extends Config((site, here, up) => {
+  case SecureMemoryControllerLocated(loc) => {
+    println("==> WithSMC")
+    Some(SecureMemoryControllerParams())
+  }}
+)
+
 class WithClockGateModel(file: String = "/vsrc/EICG_wrapper.v") extends Config((site, here, up) => {
   case ClockGateModelFile => Some(file)
 })

@@ -58,6 +58,7 @@ class MemoryControllerWrapper(beatBytes: Int)(implicit p: Parameters)
       // Return ready
       true.B
     }
+    dontTouch(in.a.bits.data)
 
     ctlnode.regmap(
       0x00 -> Seq(RegField.r(64, readCounter(_))),
