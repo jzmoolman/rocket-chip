@@ -15,12 +15,18 @@ class MemoryControllerWrapper(beatBytes: Int)(implicit p: Parameters)
   val device =  new SimpleDevice("memory-controller", Seq("jzm,mc0", "mc"))
 
   val node: TLAdapterNode = TLAdapterNode(
-    clientFn = { c =>
-      c
-    },
-    managerFn = {  m =>
-      m
-    })
+    clientFn = { c => 
+      c.copy(
+      clients = c.clients.map { client =>
+        client.copy(
+          sourceId = IdRange(0, 1 << 10)  // force 10-bit source for each client
+        )
+      }
+      )
+     }
+  )
+
+
 
   val ctlnode = TLRegisterNode(
     address     = Seq(AddressSet(MemoryControllerWrapperParams.address, 0xfff)),
